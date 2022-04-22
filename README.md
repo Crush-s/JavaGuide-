@@ -51,3 +51,35 @@ ELSIF 条件=值n THEN
 ELSE
 　　　　RETURN(缺省值)
 END IF
+### 日期型函数
+1.为日期加上指定月份函数
+ADD_MONTHS(date,integer)函数。该函数将返回在指定的日期上加一个月份数后的日期。各参数具体含义如下：
+❑date：指定的日期。
+❑integer：要加的月份数，该值如果为负数，则表示减去的月份数。
+例子：
+1.1获取指定时间段内的日期列表
+/*获取2021-09-22至2021-10-03时间段内的所有日期*/
+SELECT TO_CHAR(TO_DATE('2021-09-22', 'yyyy-MM-dd') + ROWNUM - 1, 'yyyyMMdd') as datelist
+  FROM DUAL
+CONNECT BY ROWNUM <=
+           trunc(to_date('2021-10-03', 'yyyy-MM-dd') -
+                 to_date('2021-09-22', 'yyyy-MM-dd')) + 1
+1.2获取指定时间段内的月份列表
+/*获取2021-09至2022-06时间段的所有月份*/							 
+SELECT TO_CHAR(ADD_MONTHS(TO_DATE('2021-09', 'yyyy-MM'), ROWNUM - 1),
+               'yyyyMM') as monthlist
+  FROM DUAL
+CONNECT BY ROWNUM <=
+           months_between(to_date('2022-06', 'yyyy-MM'),
+                          to_date('2021-09', 'yyyy-MM')) + 1 
+1.3获取指定时间段内的年份列表
+/*获取2021-09至2023-11时间段的所有年份*/
+SELECT TO_CHAR(ADD_MONTHS(TO_DATE('2021-09', 'yyyy-MM'), (ROWNUM - 1) * 12),
+               'yyyy') as yearlist
+  FROM DUAL
+CONNECT BY ROWNUM <=
+           months_between(to_date('2023-11', 'yyyy-MM'),
+                          to_date('2021-09', 'yyyy-MM')) / 12 + 1
+2.返回当前会话的时区
+SELECT SESSIONTIMEZONE FROM DUAL;
+
